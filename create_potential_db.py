@@ -128,6 +128,7 @@ class PotentialsToNestorDB():
                 group_name = f"{naming_conversion_mapping[self.technology]}_{region}"
 
                 if self.region_availability[region]["potential"]:
+                    self.spatial_Tech_aggregation( region, _region_path)
                     self.prepare_historical_data(
                         _region_path, region, group_name, lifetime)
                     self.prepare_time_series(
@@ -176,6 +177,7 @@ class PotentialsToNestorDB():
                 group_name = f"{naming_conversion_mapping[self.technology]}_{region}"
 
                 if self.region_availability[region]["potential"]:
+                    self.spatial_Tech_aggregation( region, _region_path)
                     self.prepare_historical_data(
                         _region_path, region, group_name, lifetime)
                     self.prepare_time_series(
@@ -227,6 +229,7 @@ class PotentialsToNestorDB():
             
                 group_name = f"{naming_conversion_mapping[self.technology]}_{region}"
                 if self.region_availability[region]["potential"]:
+                    self.spatial_Tech_aggregation( region, _region_path)
                     self.prepare_historical_data(
                         _region_path, region, group_name, lifetime)
                     self.prepare_time_series(
@@ -510,11 +513,6 @@ class PotentialsToNestorDB():
                     commissioning_per_year.loc[year-lifetime]
 
             self.historical_data_regions[group_name] = historical_stock/1000000
-
-            
-
-            print(self.historical_data_regions,self.nestor_ee_scenario_path )
-
             
 
         else:         
@@ -576,7 +574,7 @@ class PotentialsToNestorDB():
             except:
                 capacity = 0
         else:
-            capacity = pd.read_csv(os.path.join(path,f'{naming_conversion_mapping[self.technology]}_{region}.csv'))["capacity"].sum()/1000000 #+ self.historical_data_regions.loc[:, group_name].max()
+            capacity = pd.read_csv(os.path.join(path,f'{naming_conversion_mapping[self.technology]}_{region}.csv'))["capacity"].sum()/1000000 + self.historical_data_regions.loc[:, group_name].max()
 
             # potential
         if self.region_availability[region]["potential"]:
@@ -731,9 +729,9 @@ class PotentialsToNestorDB():
            
         print('end in region', rs)
         
-    def spatial_Tech_aggregation(self, region, path):
+    def spatial_Tech_aggregation(self, region, _region_path):
         from trep import Technology
-        placements = pd.read_csv(os.path.join(path,f'existing_{naming_conversion_mapping[self.technology]}_{region}.csv'))
+        placements = pd.read_csv(os.path.join(_region_path,f'existing_{naming_conversion_mapping[self.technology]}_{region}.csv'))
         
         if self.technology=='offshore' or self.technology=='onshore':
         
